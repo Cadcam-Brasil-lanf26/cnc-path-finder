@@ -136,8 +136,9 @@ const CNCForm = () => {
   };
 
   const handleTextChange = (value: string) => {
-    const sanitizedValue = sanitizeInput(value);
-    setFormData(prev => ({ ...prev, question7: sanitizedValue }));
+    // Don't trim while typing to allow spaces - only limit length
+    const limitedValue = value.slice(0, 2000);
+    setFormData(prev => ({ ...prev, question7: limitedValue }));
   };
 
   const handleSubmit = async () => {

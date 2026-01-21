@@ -17,9 +17,6 @@ const Index = () => {
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground font-heading leading-tight">
           Faça o seu pré diagnóstico da especialização da CNC
         </h1>
-        <p className="mt-3 text-subtitle text-sm md:text-base font-body">
-          Responda as perguntas abaixo para conhecermos melhor seu perfil
-        </p>
       </div>
 
       {/* Form Container */}

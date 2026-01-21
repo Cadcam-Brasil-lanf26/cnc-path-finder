@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      diagnostico_cnc: {
+        Row: {
+          created_at: string
+          "É a primeira vez que você participa da JORNADA DA PROGRAMAÇ": string
+          email: string | null
+          "Há quanto tempo você conhece o Prof. Fernando Ferreira": string
+          id: string
+          name: string | null
+          "O que realmente FALTA você APRENDER para considerar que isso s": string
+          phone: string | null
+          "Qual a sua idade": string
+          "Qual o valor do seu salário atual": string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          "Você é": string
+          "Você está empregado": string
+        }
+        Insert: {
+          created_at?: string
+          "É a primeira vez que você participa da JORNADA DA PROGRAMAÇ": string
+          email?: string | null
+          "Há quanto tempo você conhece o Prof. Fernando Ferreira": string
+          id?: string
+          name?: string | null
+          "O que realmente FALTA você APRENDER para considerar que isso s": string
+          phone?: string | null
+          "Qual a sua idade": string
+          "Qual o valor do seu salário atual": string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          "Você é": string
+          "Você está empregado": string
+        }
+        Update: {
+          created_at?: string
+          "É a primeira vez que você participa da JORNADA DA PROGRAMAÇ"?: string
+          email?: string | null
+          "Há quanto tempo você conhece o Prof. Fernando Ferreira"?: string
+          id?: string
+          name?: string | null
+          "O que realmente FALTA você APRENDER para considerar que isso s"?: string
+          phone?: string | null
+          "Qual a sua idade"?: string
+          "Qual o valor do seu salário atual"?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          "Você é"?: string
+          "Você está empregado"?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

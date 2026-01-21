@@ -107,7 +107,7 @@ const CNCForm = () => {
     setFormData(prev => ({
       ...prev,
       email: searchParams.get("email") || "",
-      name: searchParams.get("name") || "",
+      name: searchParams.get("namee") || "",
       phone: searchParams.get("phone") || "",
       utm_campaign: searchParams.get("utm_campaign") || "",
       utm_source: searchParams.get("utm_source") || "",

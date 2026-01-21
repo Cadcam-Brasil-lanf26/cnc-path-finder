@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { formSchema, sanitizeInput } from "@/lib/formValidation";
 import ProgressBar from "./ProgressBar";
 import QuestionCard from "./QuestionCard";
 import TextQuestion from "./TextQuestion";
@@ -106,14 +109,14 @@ const CNCForm = () => {
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      email: searchParams.get("email") || "",
-      name: searchParams.get("namee") || "",
-      phone: searchParams.get("phone") || "",
-      utm_campaign: searchParams.get("utm_campaign") || "",
-      utm_source: searchParams.get("utm_source") || "",
-      utm_content: searchParams.get("utm_content") || "",
-      utm_medium: searchParams.get("utm_medium") || "",
-      utm_term: searchParams.get("utm_term") || "",
+      email: sanitizeInput(searchParams.get("email") || ""),
+      name: sanitizeInput(searchParams.get("namee") || ""),
+      phone: sanitizeInput(searchParams.get("phone") || ""),
+      utm_campaign: sanitizeInput(searchParams.get("utm_campaign") || ""),
+      utm_source: sanitizeInput(searchParams.get("utm_source") || ""),
+      utm_content: sanitizeInput(searchParams.get("utm_content") || ""),
+      utm_medium: sanitizeInput(searchParams.get("utm_medium") || ""),
+      utm_term: sanitizeInput(searchParams.get("utm_term") || ""),
     }));
   }, [searchParams]);
 
@@ -121,7 +124,8 @@ const CNCForm = () => {
   const progress = (currentStep / totalSteps) * 100;
 
   const handleOptionSelect = (questionKey: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [questionKey]: value }));
+    const sanitizedValue = sanitizeInput(value);
+    setFormData(prev => ({ ...prev, [questionKey]: sanitizedValue }));
     
     // Auto-advance for questions 1-6
     if (currentStep < 7) {
@@ -132,20 +136,58 @@ const CNCForm = () => {
   };
 
   const handleTextChange = (value: string) => {
-    setFormData(prev => ({ ...prev, question7: value }));
+    const sanitizedValue = sanitizeInput(value);
+    setFormData(prev => ({ ...prev, question7: sanitizedValue }));
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    // Log form data (in production, you'd send this to a server)
-    console.log("Form submitted:", formData);
-    
-    // Simulate a brief delay for UX
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Redirect to the specified URL
-    window.location.href = "https://sndflw.com/i/jornada-fev-26";
+    try {
+      // Validate form data
+      const validationResult = formSchema.safeParse(formData);
+      
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        toast.error(firstError.message || "Dados inválidos. Verifique suas respostas.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const validatedData = validationResult.data;
+
+      // Insert into Supabase
+      const { error } = await supabase
+        .from('diagnostico_cnc')
+        .insert({
+          email: validatedData.email || null,
+          name: validatedData.name || null,
+          phone: validatedData.phone || null,
+          utm_campaign: validatedData.utm_campaign || null,
+          utm_source: validatedData.utm_source || null,
+          utm_content: validatedData.utm_content || null,
+          utm_medium: validatedData.utm_medium || null,
+          utm_term: validatedData.utm_term || null,
+          'Você é': validatedData.question1,
+          'Qual a sua idade': validatedData.question2,
+          'Há quanto tempo você conhece o Prof. Fernando Ferreira': validatedData.question3,
+          'Você está empregado': validatedData.question4,
+          'Qual o valor do seu salário atual': validatedData.question5,
+          'É a primeira vez que você participa da JORNADA DA PROGRAMAÇ': validatedData.question6,
+          'O que realmente FALTA você APRENDER para considerar que isso s': validatedData.question7,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Redirect after successful insert
+      window.location.href = "https://sndflw.com/i/jornada-fev-26";
+    } catch (error) {
+      console.error('Erro ao enviar formulário');
+      toast.error("Erro ao enviar formulário. Por favor, tente novamente.");
+      setIsSubmitting(false);
+    }
   };
 
   const renderCurrentQuestion = () => {
@@ -172,6 +214,7 @@ const CNCForm = () => {
         onChange={handleTextChange}
         onSubmit={handleSubmit}
         minLength={20}
+        maxLength={2000}
         isSubmitting={isSubmitting}
       />
     );
@@ -180,17 +223,6 @@ const CNCForm = () => {
   return (
     <div className="w-full px-4">
       <ProgressBar progress={progress} />
-      
-      {/* Hidden inputs for form data */}
-      <input type="hidden" name="email" value={formData.email} />
-      <input type="hidden" name="name" value={formData.name} />
-      <input type="hidden" name="phone" value={formData.phone} />
-      <input type="hidden" name="utm_campaign" value={formData.utm_campaign} />
-      <input type="hidden" name="utm_source" value={formData.utm_source} />
-      <input type="hidden" name="utm_content" value={formData.utm_content} />
-      <input type="hidden" name="utm_medium" value={formData.utm_medium} />
-      <input type="hidden" name="utm_term" value={formData.utm_term} />
-      
       {renderCurrentQuestion()}
     </div>
   );

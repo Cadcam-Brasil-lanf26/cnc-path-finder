@@ -6,6 +6,7 @@ interface TextQuestionProps {
   onChange: (value: string) => void;
   onSubmit: () => void;
   minLength?: number;
+  maxLength?: number;
   isSubmitting?: boolean;
 }
 
@@ -15,10 +16,20 @@ const TextQuestion = ({
   onChange, 
   onSubmit, 
   minLength = 20,
+  maxLength = 2000,
   isSubmitting = false 
 }: TextQuestionProps) => {
-  const isValid = value.trim().length >= minLength;
-  const remainingChars = minLength - value.trim().length;
+  const trimmedValue = value.trim();
+  const isValid = trimmedValue.length >= minLength;
+  const remainingChars = minLength - trimmedValue.length;
+  const isAtMaxLength = value.length >= maxLength;
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length <= maxLength) {
+      onChange(newValue);
+    }
+  };
 
   return (
     <div className="w-full max-w-lg mx-auto animate-fade-in">
@@ -29,9 +40,10 @@ const TextQuestion = ({
       <div className="space-y-4">
         <textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
           placeholder="Digite sua resposta aqui..."
           rows={5}
+          maxLength={maxLength}
           className="w-full p-4 rounded-xl border-2 border-border bg-card text-foreground 
                      placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary
                      transition-colors duration-300 font-body text-sm md:text-base"
@@ -40,6 +52,9 @@ const TextQuestion = ({
         <div className="flex justify-between items-center">
           <span className={`text-sm font-body ${isValid ? 'text-primary' : 'text-muted-foreground'}`}>
             {isValid ? '✓ Resposta válida' : `Mínimo de ${remainingChars} caracteres restantes`}
+          </span>
+          <span className={`text-sm font-body ${isAtMaxLength ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {value.length}/{maxLength}
           </span>
         </div>
 

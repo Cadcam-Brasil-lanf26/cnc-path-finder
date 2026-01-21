@@ -46,10 +46,12 @@ const QuestionCard = ({ question, options, value, onChange, hasOtherOption = fal
               <input
                 type="text"
                 value={otherValue}
+                maxLength={200}
                 onChange={(e) => {
-                  setOtherValue(e.target.value);
-                  if (e.target.value.trim()) {
-                    onChange(`Outro: ${e.target.value}`);
+                  const newValue = e.target.value.slice(0, 200);
+                  setOtherValue(newValue);
+                  if (newValue.trim()) {
+                    onChange(`Outro: ${newValue}`);
                   }
                 }}
                 placeholder="Especifique..."

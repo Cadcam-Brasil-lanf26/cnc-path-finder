@@ -15,7 +15,7 @@ const Index = () => {
       {/* Title */}
       <div className="text-center mb-8 md:mb-12 max-w-2xl animate-fade-in">
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground font-heading leading-tight">
-          Faça o seu pré diagnóstico da especialização da CNC
+          Faça o seu pré diagnóstico da Especialização CNC
         </h1>
       </div>
 

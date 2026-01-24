@@ -123,12 +123,12 @@ const CNCForm = () => {
   const totalSteps = 7;
   const progress = (currentStep / totalSteps) * 100;
 
-  const handleOptionSelect = (questionKey: keyof FormData, value: string) => {
+  const handleOptionSelect = (questionKey: keyof FormData, value: string, isOtherEditing?: boolean) => {
     const sanitizedValue = sanitizeInput(value);
     setFormData(prev => ({ ...prev, [questionKey]: sanitizedValue }));
     
-    // Auto-advance for questions 1-6
-    if (currentStep < 7) {
+    // Auto-advance for questions 1-6, but not if "Other" is still being edited
+    if (currentStep < 7 && !isOtherEditing) {
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
       }, 300);
@@ -202,7 +202,7 @@ const CNCForm = () => {
           question={question.question}
           options={question.options}
           value={formData[questionKey]}
-          onChange={(value) => handleOptionSelect(questionKey, value)}
+          onChange={(value, isOther) => handleOptionSelect(questionKey, value, isOther)}
           hasOtherOption={question.hasOtherOption}
         />
       );

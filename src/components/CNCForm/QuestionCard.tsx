@@ -1,17 +1,31 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import QuestionOption from "./QuestionOption";
 
 interface QuestionCardProps {
   question: string;
   options: string[];
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, isOther?: boolean) => void;
   hasOtherOption?: boolean;
 }
 
 const QuestionCard = ({ question, options, value, onChange, hasOtherOption = false }: QuestionCardProps) => {
   const [otherValue, setOtherValue] = useState("");
   const isOtherSelected = hasOtherOption && value.startsWith("Outro:");
+
+  const handleOtherSubmit = () => {
+    if (otherValue.trim()) {
+      onChange(`Outro: ${otherValue}`, false); // false = não é mais "outro em edição", pode avançar
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && otherValue.trim()) {
+      e.preventDefault();
+      handleOtherSubmit();
+    }
+  };
 
   return (
     <div className="w-full max-w-lg mx-auto animate-fade-in">
@@ -25,7 +39,7 @@ const QuestionCard = ({ question, options, value, onChange, hasOtherOption = fal
             key={index}
             label={option}
             selected={value === option}
-            onClick={() => onChange(option)}
+            onClick={() => onChange(option, false)}
           />
         ))}
         
@@ -35,7 +49,7 @@ const QuestionCard = ({ question, options, value, onChange, hasOtherOption = fal
               className={`form-option-radio ${isOtherSelected ? 'form-option-radio-selected' : ''}`}
               onClick={() => {
                 if (otherValue.trim()) {
-                  onChange(`Outro: ${otherValue}`);
+                  handleOtherSubmit();
                 }
               }}
             >
@@ -51,14 +65,25 @@ const QuestionCard = ({ question, options, value, onChange, hasOtherOption = fal
                   const newValue = e.target.value.slice(0, 200);
                   setOtherValue(newValue);
                   if (newValue.trim()) {
-                    onChange(`Outro: ${newValue}`);
+                    onChange(`Outro: ${newValue}`, true); // true = ainda em edição, não avançar
                   }
                 }}
+                onKeyDown={handleKeyDown}
                 placeholder="Especifique..."
                 className="flex-1 bg-transparent border-b border-border focus:border-primary outline-none 
                            text-foreground placeholder:text-muted-foreground py-1 font-body text-sm"
               />
             </div>
+            {isOtherSelected && otherValue.trim() && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleOtherSubmit}
+                className="ml-2"
+              >
+                OK
+              </Button>
+            )}
           </div>
         )}
       </div>
